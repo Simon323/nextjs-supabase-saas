@@ -8,11 +8,17 @@ interface Props {
 }
 
 const Home: NextPage<Props> = ({ lessons }: Props) => {
-  const user = useAuth();
+  const { user } = useAuth();
   console.log(user);
 
   return (
     <div className="w-full max-w-3xl mx-auto my-16 px-2">
+      <Link href={"/login"}>
+        <a>Login</a>
+      </Link>
+      <Link href={"/logout"}>
+        <a>Logout</a>
+      </Link>
       {lessons.map((lesson) => (
         <Link key={lesson.id} href={`/${lesson.id}`}>
           <a className="p-8 h-40 mb-4 rounded shadow text-xl flex">

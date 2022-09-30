@@ -1,3 +1,4 @@
+import useAuth from "context/user";
 import type { NextPage, GetStaticProps } from "next";
 import Link from "next/link";
 import { supabase } from "utils/supabase";
@@ -7,7 +8,8 @@ interface Props {
 }
 
 const Home: NextPage<Props> = ({ lessons }: Props) => {
-  console.log(supabase.auth.user());
+  const user = useAuth();
+  console.log(user);
 
   return (
     <div className="w-full max-w-3xl mx-auto my-16 px-2">

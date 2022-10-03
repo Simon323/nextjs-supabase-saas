@@ -22,6 +22,7 @@ const AuthContext = createContext<IAuth>({
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null | any>(supabase.auth.user());
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           ...profile,
         });
       }
+      setInitialLoading(false);
     };
 
     getUserProfile();
@@ -63,7 +65,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const memoedValue = useMemo(() => ({ user, login, logout }), [user]);
 
   return (
-    <AuthContext.Provider value={memoedValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={memoedValue}>
+      {!initialLoading && children}
+    </AuthContext.Provider>
   );
 };
 

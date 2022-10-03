@@ -3,10 +3,15 @@ import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "utils/supabase";
 
+interface IUser {
+  is_subscribed: boolean;
+}
+
 interface IAuth {
-  user: User | null;
+  user: (User & IUser) | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  isLoading: boolean;
 }
 
 interface AuthProviderProps {
@@ -17,12 +22,14 @@ const AuthContext = createContext<IAuth>({
   user: null,
   login: async () => {},
   logout: async () => {},
+  isLoading: false,
 });
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null | any>(supabase.auth.user());
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getUserProfile = async () => {
@@ -38,6 +45,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           ...sessionUser,
           ...profile,
         });
+
+        setIsLoading(false);
       }
       setInitialLoading(false);
     };
@@ -62,7 +71,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     router.push("/");
   };
 
-  const memoedValue = useMemo(() => ({ user, login, logout }), [user]);
+  const memoedValue = useMemo(
+    () => ({ user, login, logout, isLoading }),
+    [user]
+  );
 
   return (
     <AuthContext.Provider value={memoedValue}>

@@ -1,3 +1,4 @@
+import useAuth from "context/user";
 import { GetStaticProps } from "next";
 import Stripe from "stripe";
 
@@ -6,6 +7,12 @@ interface Props {
 }
 
 function Pricing({ plans }: Props) {
+  const { user, login, isLoading } = useAuth();
+
+  const showSubscribeButton = !!user && !user.is_subscribed;
+  const showCreateAccountButton = !user;
+  const showManageSubscriptionButton = !!user && user.is_subscribed;
+
   return (
     <div className="w-full max-w-3xl mx-auto flex justify-around flex-wrap gap-y-5 pt-5">
       {plans.map((plan, index) => (
@@ -18,6 +25,17 @@ function Pricing({ plans }: Props) {
             {plan.price && `$ ${plan.price / 100}`}{" "}
             {plan.interval && `/ ${plan.interval}`}
           </p>
+          {!isLoading && (
+            <div>
+              {showSubscribeButton && <button>Subscribe</button>}
+              {showCreateAccountButton && (
+                <button onClick={login}>Create Account</button>
+              )}
+              {showManageSubscriptionButton && (
+                <button>Manage subscription</button>
+              )}
+            </div>
+          )}
         </div>
       ))}
     </div>

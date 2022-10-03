@@ -1,3 +1,5 @@
+type Interval = "day" | "month" | "week" | "year";
+
 interface Lesson {
   id: number;
   title: string;
@@ -14,4 +16,12 @@ interface Profile {
 interface PremiumContent {
   id: number;
   video_url?: string;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number | null;
+  interval?: Interval | undefined | null;
+  currency: string;
 }

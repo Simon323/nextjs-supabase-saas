@@ -9,7 +9,10 @@ function Pricing({ plans }: Props) {
   return (
     <div className="w-full max-w-3xl mx-auto flex justify-around flex-wrap gap-y-5 pt-5">
       {plans.map((plan, index) => (
-        <div key={index} className="w-80 h-40 rounded shadow px-6 py-6">
+        <div
+          key={index}
+          className="w-80 h-40 rounded shadow px-6 py-6 hover:bg-slate-400 hover:cursor-pointer"
+        >
           <h2 className="text-xl">{plan.name}</h2>
           <p className="text-gray-500">
             {plan.price && `$ ${plan.price / 100}`}{" "}

@@ -1,7 +1,8 @@
 import { GetStaticPaths, GetStaticProps, GetStaticPropsContext } from "next";
 import { ParsedUrlQuery } from "querystring";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "utils/supabase";
+import Video from "react-player";
 
 interface IParams extends ParsedUrlQuery {
   id: string;
@@ -12,12 +13,27 @@ interface Props {
 }
 
 function LessonDetails({ lesson }: Props) {
-  console.log(lesson);
+  const [videoUrl, setvideoUrl] = useState<string | null | undefined>(null);
+
+  const getPremiumContent = async () => {
+    const { data } = await supabase
+      .from<PremiumContent>("premium_content")
+      .select("video_url")
+      .eq("id", lesson.id)
+      .single();
+
+    setvideoUrl(data?.video_url);
+  };
+
+  useEffect(() => {
+    getPremiumContent();
+  }, []);
 
   return (
     <div className="w-full max-w-3xl mx-auto py-16 px-8">
       <h1 className="text-3xl mb-6">{lesson.title}</h1>
       <p>{lesson.description}</p>
+      {!!videoUrl && <Video url={videoUrl} width="100%" />}
     </div>
   );
 }

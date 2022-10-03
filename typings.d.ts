@@ -10,3 +10,8 @@ interface Profile {
   interval?: string;
   stripe_customer?: string;
 }
+
+interface PremiumContent {
+  id: number;
+  video_url?: string;
+}

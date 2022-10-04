@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "utils/supabase";
+import { getServiceSupabase } from "utils/supabase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2022-08-01",
@@ -14,6 +14,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const customer = await stripe.customers.create({
     email: req.body.record.email, //TODO: Cast to IRecord object
   });
+
+  const supabase = getServiceSupabase();
 
   await supabase
     .from<Profile>("profile")

@@ -2,6 +2,7 @@ import useAuth from "context/user";
 import { GetStaticProps } from "next";
 import Stripe from "stripe";
 import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
 
 interface Props {
   plans: Product[];
@@ -12,7 +13,8 @@ function Pricing({ plans }: Props) {
 
   const processSubscription = (planId: string) => async () => {
     const { data } = await axios.get(`/api/subscription/${planId}`);
-    console.log(data);
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY!);
+    await stripe?.redirectToCheckout({ sessionId: data.id });
   };
 
   const showSubscribeButton = !!user && !user.is_subscribed;
@@ -64,7 +66,7 @@ export const getStaticProps: GetStaticProps = async () => {
       const product = await stripe.products.retrieve(price.product as string);
 
       return {
-        id: product.id,
+        id: price.id,
         name: product.name,
         price: price.unit_amount,
         interval: price?.recurring?.interval ?? null,

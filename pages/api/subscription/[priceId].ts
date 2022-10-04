@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "utils/supabase";
 import cookie from "cookie";
+import Stripe from "stripe";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { user } = await supabase.auth.api.getUserByCookie(req);
@@ -24,9 +25,30 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       .eq("id", user.id)
       .single();
 
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2022-08-01",
+    });
+
+    //TODO: Add more types
+    const { priceId } = req.query;
+    // const lineItems = [
+    //   {
+    //     price: priceId,
+    //     quantity: 1,
+    //   },
+    // ];
+
+    const session = await stripe.checkout.sessions.create({
+      customer: data?.stripe_customer,
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [{ price: priceId as string, quantity: 1 }],
+      success_url: "http://localhost:3000/payment/success",
+      cancel_url: "http://localhost:3000/payment/cancelld",
+    });
+
     res.send({
-      ...user,
-      stripe_customer: data?.stripe_customer,
+      id: session.id,
     });
   } else {
     return res.status(500).send("No headers cookie found");

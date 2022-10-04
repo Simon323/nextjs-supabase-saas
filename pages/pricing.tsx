@@ -1,6 +1,7 @@
 import useAuth from "context/user";
 import { GetStaticProps } from "next";
 import Stripe from "stripe";
+import axios from "axios";
 
 interface Props {
   plans: Product[];
@@ -8,6 +9,11 @@ interface Props {
 
 function Pricing({ plans }: Props) {
   const { user, login, isLoading } = useAuth();
+
+  const processSubscription = (planId: string) => async () => {
+    const { data } = await axios.get(`/api/subscription/${planId}`);
+    console.log(data);
+  };
 
   const showSubscribeButton = !!user && !user.is_subscribed;
   const showCreateAccountButton = !user;
@@ -27,12 +33,16 @@ function Pricing({ plans }: Props) {
           </p>
           {!isLoading && (
             <div>
-              {showSubscribeButton && <button>Subscribe</button>}
+              {showSubscribeButton && (
+                <button onClick={processSubscription(plan.id)}>
+                  Subscribe
+                </button>
+              )}
               {showCreateAccountButton && (
                 <button onClick={login}>Create Account</button>
               )}
               {showManageSubscriptionButton && (
-                <button>Manage subscription</button>
+                <button>Manage Subscription</button>
               )}
             </div>
           )}

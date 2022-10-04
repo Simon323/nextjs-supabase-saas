@@ -2,6 +2,7 @@ import { User } from "@supabase/gotrue-js";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "utils/supabase";
+import axios from "axios";
 
 interface IUser {
   is_subscribed: boolean;
@@ -45,9 +46,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           ...sessionUser,
           ...profile,
         });
-
-        setIsLoading(false);
       }
+      setIsLoading(false);
       setInitialLoading(false);
     };
 
@@ -58,6 +58,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       getUserProfile();
     });
   }, []);
+
+  useEffect(() => {
+    axios.post("/api/set-supabase-cookie", {
+      event: user ? "SIGNED_IN" : "SIGNED_OUT",
+      session: supabase.auth.session(),
+    });
+  }, [user]);
 
   const login = async () => {
     await supabase.auth.signIn({
@@ -73,7 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const memoedValue = useMemo(
     () => ({ user, login, logout, isLoading }),
-    [user]
+    [user, isLoading]
   );
 
   return (

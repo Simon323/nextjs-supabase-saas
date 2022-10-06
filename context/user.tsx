@@ -61,6 +61,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
+    if (user) {
+      const subscription = supabase
+        .from(`profile:id=eq.${user.id}`)
+        .on("UPDATE", (payload) => {
+          setUser({ ...user, ...payload.new });
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeSubscription(subscription);
+      };
+    }
+  }, [user]);
+
+  useEffect(() => {
     axios.post("/api/set-supabase-cookie", {
       event: user ? "SIGNED_IN" : "SIGNED_OUT",
       session: supabase.auth.session(),

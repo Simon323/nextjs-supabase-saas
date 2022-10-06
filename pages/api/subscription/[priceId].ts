@@ -43,8 +43,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [{ price: priceId as string, quantity: 1 }],
-      success_url: "http://localhost:3000/payment/success",
-      cancel_url: "http://localhost:3000/payment/cancelld",
+      success_url: `${process.env.CLIENT_URL}/payment/success`,
+      cancel_url: `${process.env.CLIENT_URL}/payment/cancelld`,
     });
 
     res.send({

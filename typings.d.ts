@@ -9,7 +9,7 @@ interface Lesson {
 interface Profile {
   id: number;
   is_subscribed: boolean;
-  interval?: string;
+  interval?: string | null;
   stripe_customer?: string;
 }
 

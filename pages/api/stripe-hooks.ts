@@ -30,6 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (event.type) {
     case "customer.subscription.created":
+    case "customer.subscription.updated":
       await supabase
         .from<Profile>("profile")
         .update({
@@ -40,9 +41,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         //@ts-ignore //TODO: Fix this error
         .eq("stripe_customer", event.data.object.customer);
       break;
-    case "customer.subscription.updated":
-      break;
     case "customer.subscription.deleted":
+      await supabase
+        .from<Profile>("profile")
+        .update({
+          is_subscribed: false,
+          interval: null,
+        })
+        //@ts-ignore //TODO: Fix this error
+        .eq("stripe_customer", event.data.object.customer);
       break;
   }
 

@@ -6,6 +6,7 @@ import axios from "axios";
 
 interface IUser {
   is_subscribed: boolean;
+  interval?: string;
 }
 
 interface IAuth {

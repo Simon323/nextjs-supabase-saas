@@ -3,6 +3,7 @@ import { GetStaticProps } from "next";
 import Stripe from "stripe";
 import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
+import Link from "next/link";
 
 interface Props {
   plans: Product[];
@@ -44,7 +45,9 @@ function Pricing({ plans }: Props) {
                 <button onClick={login}>Create Account</button>
               )}
               {showManageSubscriptionButton && (
-                <button>Manage Subscription</button>
+                <Link href="/dashboard">
+                  <a>Manage Subscription</a>
+                </Link>
               )}
             </div>
           )}
